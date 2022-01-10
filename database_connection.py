@@ -6,8 +6,7 @@ class Statistics:
 
 class MongoDB:
     def __init__(self, password):
-        url = "mongodb+srv://user0000:pass{}@cluster0.n0awd.mongodb.net/" \
-              "myFirstDatabase?retryWrites=true&w=majority".format(password)
+        url = ""
         self.client = pymongo.MongoClient(url)
         self.db = self.client["simulation_db"]
         self.collection = self.db["simulation_persons"]
