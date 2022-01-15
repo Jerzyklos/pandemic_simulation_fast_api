@@ -1,5 +1,5 @@
 import pymongo
-from main import Person
+from simulation import Person
 
 class Statistics:
     pass
@@ -14,7 +14,7 @@ class MongoDB:
         self.collection = self.db["simulation_statistics"]
     def delete_collection_content(self):
         self.collection.delete_many({})
-    def add_person_to_col(self, person:Person):
+    def add_persons_to_col(self, person:Person):
         pass
     def add_stats_to_col(self, stats:Statistics):
         pass
