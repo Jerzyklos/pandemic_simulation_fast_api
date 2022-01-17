@@ -15,6 +15,8 @@ class Simulation:
         self.persons = []
         self.data_parser = DataParser()
         self.mongoDB = MongoDB()
+        # clear old results before launching new
+        self.mongoDB.delete_collection_content()
 
     def populate(self, n: int):
         self.persons = [Person() for i in range(n)]
@@ -32,16 +34,15 @@ class Simulation:
                         if random() < spreading_probability and person.state == HealthState.HEALTHY and second_person.is_infecting():
                             person.infect()
 
-    def write_data_to_DB(self, steps):
+    def write_data_to_DB(self, step):
         # interval of statistics
         interval = 10
-        if steps % interval == 0:
-            statistics = self.data_parser.parse_statistics(self.persons)
+        if step % interval == 0:
+            statistics = self.data_parser.parse_statistics(step, self.persons)
             self.mongoDB.add_stats_to_col(statistics)
         # info about persons positions and states
-        persons_info = self.data_parser(persons)
-        self.mongoDB.add_persons_to_col(persons_info)
-
+        # persons_info = self.data_parser.parse_persons(step, self.persons)
+        # self.mongoDB.add_persons_to_col(persons_info)
 
     def get_persons(self):
         return self.persons
@@ -51,20 +52,20 @@ def euclides_dist(pos_a: Tuple[float, float], pos_b: Tuple[float, float]) -> flo
     return sqrt((pos_a[0] - pos_b[0])**2 + (pos_a[1] - pos_b[1])**2)
 
 
-if __name__=="__main__":
+def run_simulation(population: int):
     display_board = False
     simulation = Simulation()
-    simulation.populate(n=100)
+    simulation.populate(population)
     if display_board:
         board = SimulationBoard()
     # simulation main loop
-    steps = 0
-    while steps < simulation_steps:
+    step = 0
+    while step < simulation_steps:
         simulation.simulate()
-        simulation.write_data_to_DB(steps)
-        steps += 1
-        if steps % 1000 == 0:
-            print("Simulation steps: {}".format(steps))
+        simulation.write_data_to_DB(step)
+        step += 1
+        if step % 1000 == 0:
+            print("Simulation steps: {}".format(step))
         if display_board:
             # handling of closing the board
             closed = board.is_closed()
@@ -75,3 +76,7 @@ if __name__=="__main__":
             for person in persons:
                 board.draw(person)
             board.update_board()
+
+
+if __name__=="__main__":
+    run_simulation(50)

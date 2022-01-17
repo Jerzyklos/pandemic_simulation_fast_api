@@ -19,11 +19,9 @@ class SimulationBoard():
 
     def __init__(self):
         pygame.init()
-        self.FPS = 24  # frames per second setting
+        self.FPS = 24
         self.fpsClock = pygame.time.Clock()
-        # definiowanie okna gry
         self.window = pygame.display.set_mode((500, 500))
-        # wyświetlanie okna gry
         pygame.display.set_caption("Simulation")
         self.colors = health_state_colors()
 
