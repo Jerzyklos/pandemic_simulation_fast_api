@@ -1,5 +1,5 @@
 import unittest
-from main import Person, HealthState
+from simulation import Person, HealthState
 from simulation_parameters import X_DIM, Y_DIM, quarantine
 
 # Testing functions of Person class

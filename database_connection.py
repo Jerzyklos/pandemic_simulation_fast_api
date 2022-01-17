@@ -1,34 +1,30 @@
 import pymongo
-from main import Person
+import secret
 
-class Statistics:
-    pass
 
 class MongoDB:
-    def __init__(self, password):
-        url = ""
+
+    def __init__(self):
+        url = secret.url
         self.client = pymongo.MongoClient(url)
         self.db = self.client["simulation_db"]
-        self.collection = self.db["simulation_persons"]
-        self.collection = self.db["simulation_statistics"]
+        self.col_persons = self.db["simulation_persons"]
+        self.col_stats = self.db["simulation_statistics"]
+
     def delete_collection_content(self):
-        self.collection.delete_many({})
-    def add_person_to_col(self, person:Person):
-        pass
-    def add_stats_to_col(self, stats:Statistics):
-        pass
+        self.col_persons.delete_many({})
+        self.col_stats.delete_many({})
+
+    def add_persons_to_col(self, data):
+        self.col_persons.insert_one(data)
+
+    def add_stats_to_col(self, data):
+        self.col_stats.insert_one(data)
+
     def return_record(self):
-        return self.collection.find_one()
+        # return self.collection.find_one()
+        return self.col_persons.find()
+
     def print_info(self):
         print(self.client.list_database_names())
         print(self.db.list_collection_names())
-
-
-mongoDB = MongoDB('XXXX')
-mongoDB.print_info()
-mongoDB.delete_collection_content()
-print(mongoDB.return_record())
-
-"""
-
-"""
