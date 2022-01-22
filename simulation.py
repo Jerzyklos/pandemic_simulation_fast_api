@@ -1,12 +1,12 @@
-from random import random, randint
+from random import random
 from typing import Tuple
 from math import sqrt
-from person import Person
-from simulation_board import SimulationBoard
-from data_parser import DataParser
-from database_connection import MongoDB
+from fast_api.person import Person
+from fast_api.simulation_board import SimulationBoard
+from fast_api.data_parser import DataParser
+from fast_api.database_connection import MongoDB
 # all the simulation parameters
-from simulation_parameters import *
+from fast_api.simulation_parameters import HealthState
 
 
 class Simulation:
@@ -17,11 +17,13 @@ class Simulation:
         self.mongoDB = MongoDB()
         # clear old results before launching new
         self.mongoDB.delete_collection_content()
+        # get simulation parameters
+        self.parameters = self.mongoDB.return_parameters()[0]
 
     def populate(self, n: int):
-        self.persons = [Person() for i in range(n)]
+        self.persons = [Person(self.parameters) for i in range(n)]
         for person in self.persons:
-            if random() < starting_illness_probability:
+            if random() < self.parameters["starting_illness_probability"]:
                 person.infect()
 
     def simulate(self):
@@ -30,8 +32,8 @@ class Simulation:
             person.simulate_illness()
             if person.state != HealthState.DEAD:
                 for second_person in self.persons:
-                    if euclides_dist((second_person.x_pos, second_person.y_pos), (person.x_pos, person.y_pos)) < spreading_radius:
-                        if random() < spreading_probability and person.state == HealthState.HEALTHY and second_person.is_infecting():
+                    if euclides_dist((second_person.x_pos, second_person.y_pos), (person.x_pos, person.y_pos)) < self.parameters["spreading_radius"]:
+                        if random() < self.parameters["spreading_probability"] and person.state == HealthState.HEALTHY and second_person.is_infecting():
                             person.infect()
 
     def write_data_to_DB(self, step):
@@ -40,6 +42,7 @@ class Simulation:
         if step % interval == 0:
             statistics = self.data_parser.parse_statistics(step, self.persons)
             self.mongoDB.add_stats_to_col(statistics)
+        # Commented: works too slow
         # info about persons positions and states
         # persons_info = self.data_parser.parse_persons(step, self.persons)
         # self.mongoDB.add_persons_to_col(persons_info)
@@ -53,14 +56,15 @@ def euclides_dist(pos_a: Tuple[float, float], pos_b: Tuple[float, float]) -> flo
 
 
 def run_simulation(population: int):
-    display_board = False
+    display_board = True
     simulation = Simulation()
     simulation.populate(population)
     if display_board:
         board = SimulationBoard()
     # simulation main loop
     step = 0
-    while step < simulation_steps:
+    max_steps = simulation.parameters["simulation_steps"]
+    while step < max_steps:
         simulation.simulate()
         simulation.write_data_to_DB(step)
         step += 1

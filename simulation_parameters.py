@@ -7,6 +7,7 @@ class HealthState(Enum):
     SYMPTOMATIC = "symptomatic"
     DEAD = "dead"
 
+
 # Simulation parameters:
 # probability of ill person at the beginning of the simulation
 starting_illness_probability = 0.2
@@ -25,7 +26,7 @@ min_immunity_duration = 200
 max_immunity_duration = 600
 # when quarantine is true, symptomatic persons don't move
 # and don't spread illness, when tested
-quarantine = False
+quarantine = True
 # availibity of tests, 1 means full avaibility
 test_avaibility = 0.9
 # dimensions of board
