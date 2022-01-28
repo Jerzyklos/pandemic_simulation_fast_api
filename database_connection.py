@@ -27,9 +27,9 @@ class MongoDB:
         self.col_parameters.delete_many({})
         self.col_parameters.insert_one(data)
 
-    def return_stats(self):
-        # return self.collection.find_one()
-        return self.col_stats.find().to_list(1000)
+    def return_stats(self, start: int, stop: int):
+        query = {"$and": [{"step": {"$gte": start}}, {"step": {"$lte": stop}}]}
+        return self.col_stats.find(query)
 
     def return_parameters(self):
         return self.col_parameters.find()

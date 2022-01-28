@@ -1,7 +1,7 @@
 from pydantic import BaseModel
+from typing import Optional
 
-
-# Request body used for setting new simulation parameters
+# Model used for setting new simulation parameters
 class SimulationParametersModel(BaseModel):
     starting_illness_probability: float
     symptomatic_probability: float
@@ -13,5 +13,14 @@ class SimulationParametersModel(BaseModel):
     min_immunity_duration: int
     max_immunity_duration: int
     quarantine: bool
-    test_avaibility: float
+    test_availability: float
     simulation_steps: int
+
+
+# Model used for returning simulation statistics
+class SimulationStatistics(BaseModel):
+    step: int
+    healthy: int
+    symptomatic: int
+    asymptomatic: int
+
