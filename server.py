@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from fast_api.database_connection import MongoDB
 from fast_api.simulation import run_simulation
-from fast_api.base_models import SimulationParametersModel
+from fast_api.base_models import SimulationParametersModel, SimulationStatistics
 from fast_api.data_parser import DataParser
+from pydantic import parse_obj_as
 
 
 app = FastAPI()
@@ -19,9 +20,10 @@ async def set_new_parameters(simulation_parameters: SimulationParametersModel):
     return {"message": "Simulation paramaters set"}
 
 
-@app.get("/simulation_parameters/")
+@app.get("/simulation_parameters/", response_model=SimulationParametersModel)
 async def get_parameters():
-    data = SimulationParametersModel.parse_obj(mongoDB.return_parameters()[0])
+    parameters = mongoDB.return_parameters()[0]
+    data = SimulationParametersModel.parse_obj(parameters)
     return data
 
 
@@ -30,15 +32,21 @@ async def root():
     return {"message": "Index"}
 
 
-@app.post("/run/{n}")
+@app.get("/run/{n}")
 async def run(n: int):
-    run_simulation(n)
-    return {"run"}
+    # run_simulation(n)
+    return {"n": str(n)}
 
 
-@app.get("/statistics")
-async def statitics():
-    data = mongoDB.return_stats()
+# example: /statistics/?start=100
+# example: /statistics/?start=100&stop=200
+# get statistics for steps from start to stop, stop is voluntary
+@app.get("/statistics/", response_model=List[SimulationStatistics])
+async def statitics(start: int, stop: Optional[int] = None):
+    if stop is None:
+        stop = start
+    stats = mongoDB.return_stats(start, stop)
+    data = [SimulationStatistics.parse_obj(stat) for stat in stats]
     return data
 
 
