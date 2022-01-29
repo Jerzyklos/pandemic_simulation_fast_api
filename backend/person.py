@@ -1,4 +1,4 @@
-from fast_api.simulation_parameters import HealthState, X_DIM, Y_DIM
+from fast_api.backend.simulation_parameters import HealthState, X_DIM, Y_DIM
 from random import random, randint
 
 

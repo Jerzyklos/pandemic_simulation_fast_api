@@ -1,11 +1,11 @@
 import pymongo
-import fast_api.secret
+import fast_api.backend.secret
 
 
 class MongoDB:
 
     def __init__(self):
-        url = fast_api.secret.url
+        url = fast_api.backend.secret.url
         self.client = pymongo.MongoClient(url)
         self.db = self.client["simulation_db"]
         self.col_parameters = self.db["simulation_parameters"]
@@ -30,6 +30,10 @@ class MongoDB:
     def return_stats(self, start: int, stop: int):
         query = {"$and": [{"step": {"$gte": start}}, {"step": {"$lte": stop}}]}
         return self.col_stats.find(query)
+
+    def return_persons(self, step: int):
+        query = {"step" : step}
+        return self.col_persons.find(query)
 
     def return_parameters(self):
         return self.col_parameters.find()
