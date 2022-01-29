@@ -1,6 +1,6 @@
-from fast_api.person import Person
+from fast_api.backend.person import Person
 from typing import List
-from fast_api.base_models import SimulationParametersModel
+from fast_api.backend.base_models import SimulationParametersModel
 
 
 # Data parser for parsing data from simulation to
@@ -20,11 +20,10 @@ class DataParser:
                 data[person.state.value] += 1
         return data
 
-    def parse_persons(self, step, persons: List[Person]):
-        key = str(step)
-        data = {key: []}
+    def parse_persons(self, step: int, persons: List[Person]):
+        data = {"step": step, "persons":[]}
         for person in persons:
-            data[key].append({"x": int(person.x_pos), "y": int(person.y_pos), "state": person.state.value})
+            data["persons"].append({"x": int(person.x_pos), "y": int(person.y_pos), "state": person.state.value})
         return data
 
     def parse_parameters(self, parameters: SimulationParametersModel):

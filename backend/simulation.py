@@ -1,12 +1,12 @@
 from random import random
 from typing import Tuple
 from math import sqrt
-from fast_api.person import Person
-from fast_api.simulation_board import SimulationBoard
-from fast_api.data_parser import DataParser
-from fast_api.database_connection import MongoDB
+from fast_api.backend.person import Person
+from fast_api.backend.simulation_board import SimulationBoard
+from fast_api.backend.data_parser import DataParser
+from fast_api.backend.database_connection import MongoDB
 # all the simulation parameters
-from fast_api.simulation_parameters import HealthState
+from fast_api.backend.simulation_parameters import HealthState
 
 
 class Simulation:
@@ -38,14 +38,16 @@ class Simulation:
 
     def write_data_to_DB(self, step):
         # interval of statistics
-        interval = 10
-        if step % interval == 0:
+        interval_stats = 10
+        if step % interval_stats == 0:
             statistics = self.data_parser.parse_statistics(step, self.persons)
             self.mongoDB.add_stats_to_col(statistics)
-        # Commented: works too slow
         # info about persons positions and states
-        # persons_info = self.data_parser.parse_persons(step, self.persons)
-        # self.mongoDB.add_persons_to_col(persons_info)
+        # interval of writing persons positions and state
+        interval_persons = 100
+        if step % interval_persons == 0:
+            persons_info = self.data_parser.parse_persons(step, self.persons)
+            self.mongoDB.add_persons_to_col(persons_info)
 
     def get_persons(self):
         return self.persons
@@ -56,7 +58,7 @@ def euclides_dist(pos_a: Tuple[float, float], pos_b: Tuple[float, float]) -> flo
 
 
 def run_simulation(population: int):
-    display_board = True
+    display_board = False
     simulation = Simulation()
     simulation.populate(population)
     if display_board:
@@ -83,4 +85,4 @@ def run_simulation(population: int):
 
 
 if __name__=="__main__":
-    run_simulation(50)
+    run_simulation(30)

@@ -1,6 +1,6 @@
 import pygame
-from fast_api.person import Person
-from fast_api.simulation_parameters import HealthState
+from fast_api.backend.person import Person
+from fast_api.backend.simulation_parameters import HealthState
 from typing import Dict
 
 

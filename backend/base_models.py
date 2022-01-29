@@ -24,3 +24,10 @@ class SimulationStatistics(BaseModel):
     symptomatic: int
     asymptomatic: int
 
+
+# Model used for returning persons positions and states
+class PersonsPositionAndState(BaseModel):
+    x: int
+    y: int
+    state: str
+
