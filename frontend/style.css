@@ -1,0 +1,10 @@
+.main-container{
+  justify-content: center;
+  display: flex;
+}
+
+.center {
+  margin: auto;
+  width:40%;
+  padding: 20px;
+}
